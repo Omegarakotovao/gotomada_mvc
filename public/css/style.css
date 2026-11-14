@@ -1,0 +1,1597 @@
+/* ==========================================================================
+   PROJET GOTOMADA — FEUILLE DE STYLE PRINCIPALE (css/style.css)
+   Conforme STRICTEMENT au Style Tile officiel de la charte graphique :
+   - Blanc cassé : #FFFFFA (fond général de base / background)
+   - Noir : #1E1D1A (texte principal et contrastes de lecture)
+   - Vert principal : #34C759 (couleur dominante de l'identité GoToMada)
+   - Beige : #FFF1D2 (sections chaleureuses & éléments secondaires)
+   - Orange : #FF9A40 (couleur d'accentuation, prix, étoiles)
+   - Typographies : Cinzel (Titres), Iosevka Charon Mono (Sous-titres/Métadonnées), Poppins (Texte)
+   Auteur : RAKOTOVAO Oméga — Formation Développeur Web et Web Mobile (DWWM)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. IMPORTS DES POLICES TYPOGRAPHIQUES (Web Fonts)
+   --------------------------------------------------------------------------
+   Ce que fait le code :
+   Télécharge les polices externes depuis les serveurs CDN de Google Fonts 
+   et de Fontsource pour les rendre disponibles dans tout le document.
+
+   Pourquoi :
+   Pour respecter la charte graphique (Style Tile) sans dépendre des polices
+   installées par défaut sur l'ordinateur du visiteur.
+
+   Utilité dans GoToMada :
+   - "Cinzel" apporte une élégance patrimoniale aux titres de séjours.
+   - "Poppins" offre une grande lisibilité pour les longs textes descriptifs.
+   - "Iosevka Charon Mono" donne un esprit "carnet d'explorateur" aux prix et métadonnées.
+
+   Si supprimé :
+   Le navigateur afficherait des polices par défaut système (Times New Roman, Arial),
+   ce qui dégraderait l'identité visuelle de marque.
+   -------------------------------------------------------------------------- */
+/* Polices Google Fonts : Cinzel (Bold 700) et Poppins (300, 400, 500, 600, 700) */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* Police Monospace d'explorateur : Iosevka Charon Mono via CDN Fontsource */
+@import url('https://cdn.jsdelivr.net/npm/@fontsource/iosevka-charon-mono/index.min.css');
+
+
+/* --------------------------------------------------------------------------
+   2. VARIABLES CSS (:root) — CENTRALISATION DE LA CHARTE STYLE TILE
+   --------------------------------------------------------------------------
+   Ce que fait le code :
+   Déclare des propriétés personnalisées (Custom Properties) accessibles globalement.
+
+   Pourquoi (Notion clé DWWM - Principe DRY : Don't Repeat Yourself) :
+   Permet de centraliser toutes les valeurs répétées (couleurs, polices, arrondis,
+   ombres). Si la direction artistique change, on ne modifie qu'une seule ligne ici
+   au lieu de chercher dans 1500 lignes de CSS.
+
+   Utilité dans GoToMada :
+   Garantit la cohérence visuelle parfaite entre les 17 pages du site.
+   -------------------------------------------------------------------------- */
+:root {
+    /* --- Palette chromatique officielle du Style Tile --- */
+    --color-bg-base: #FFFFFA;        /* Blanc cassé : base générale */
+    --color-text-main: #1E1D1A;      /* Noir : texte principal lisible */
+    --color-text-muted: #5e5b54;     /* Teinte secondaire pour métadonnées */
+    --color-primary: #34C759;        /* Vert principal : identité GoToMada */
+    --color-primary-hover: #2db34f;  /* Vert foncé pour état au survol */
+    --color-primary-soft: rgba(52, 199, 89, 0.12); /* Teinte verte très douce pour fonds d'icônes ou badges */
+    --color-secondary-bg: #FFF1D2;   /* Beige chaleureux : ambiance voyage */
+    --color-accent: #FF9A40;         /* Orange : accents et points d'attention (prix, notes) */
+    --color-accent-hover: #f0892b;   /* Orange foncé pour état interactif */
+    --color-border: #e6e3da;         /* Bordures douces et séparateurs */
+    --color-border-hover: #cfcbbe;
+    --color-white: #ffffff;
+
+    /* --- Typographies hiérarchisées --- */
+    --font-title: 'Cinzel', serif;
+    --font-mono: 'Iosevka Charon Mono', 'Courier New', monospace;
+    --font-body: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* --- Rayons de courbure des bordures (coins arrondis) --- */
+    --radius-sm: 6px;                /* Petits boutons, champs de saisie */
+    --radius-md: 12px;               /* Cartes moyennes, avis, images */
+    --radius-lg: 20px;               /* Grandes cartes de séjours, conteneurs principaux */
+    --radius-pill: 9999px;           /* Boutons pilules arrondis à 100% */
+
+    /* --- Ombres discrètes et élégantes (Élévation visuelle) --- */
+    --shadow-subtle: 0 4px 14px rgba(30, 29, 26, 0.05);
+    --shadow-card: 0 6px 18px rgba(30, 29, 26, 0.07);
+    --shadow-hover: 0 10px 26px rgba(30, 29, 26, 0.12);
+
+    /* --- Durées de transitions fluides --- */
+    --transition-fast: 0.2s ease;
+    --transition-smooth: 0.3s ease;
+
+    /* --- Largeurs maximales de contenu pour limiter la dispersion sur grands écrans --- */
+    --max-width-content: 1200px;
+    --max-width-reading: 860px;      /* Largeur optimale de confort de lecture (CGU, formulaires) */
+}
+
+
+/* --------------------------------------------------------------------------
+   3. RESET DU MODÈLE DE BOÎTE (BOX MODEL) & STYLES DE BASE
+   --------------------------------------------------------------------------
+   Ce que fait le code :
+   Réinitialise les marges et paddings par défaut imposés par chaque navigateur
+   et configure le modèle de boîte universel.
+
+   Notion clé DWWM (Très importante à l'oral !) :
+   - box-sizing: border-box :
+     Par défaut, en CSS standard (content-box), ajouter du padding ou une bordure
+     agrandit la boîte et casse les largeurs (100% + 20px déborde de l'écran).
+     Avec "border-box", le padding et la bordure sont inclus DANS la largeur
+     définie, ce qui évite tout débordement horizontal indésirable.
+   - flex-direction: column sur le body et flex: 1 0 auto sur main :
+     Technique du "Sticky Footer" en pur CSS qui pousse le footer tout en bas
+     de l'écran même si la page contient peu de contenu.
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Défilement fluide lors du clic sur un lien d'ancrage (ex: #nosSejours) */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--color-text-main);
+    background-color: var(--color-bg-base);
+    -webkit-font-smoothing: antialiased; /* Rendu net des polices sur WebKit/macOS */
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Prend tout l'espace vertical disponible entre le header et le footer */
+main {
+    flex: 1 0 auto;
+    width: 100%;
+}
+
+/* Évite que les images ne débordent de leur conteneur parent */
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Supprime le soulignement par défaut et hérite de la couleur de texte */
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+/* Harmonise la police des champs de formulaires avec le reste du document */
+button, input, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+
+/* --------------------------------------------------------------------------
+   4. TYPOGRAPHIE & HIÉRARCHIE VISUELLE DU STYLE TILE
+   --------------------------------------------------------------------------
+   Notion clé DWWM :
+   - clamp(min, valeur_idéale, max) : Typographie fluide moderne.
+     Permet au texte de grossir ou rétrécir de façon fluide selon la largeur
+     de l'écran sans avoir besoin d'écrire une règle @media à chaque pixel.
+   -------------------------------------------------------------------------- */
+/* Grands titres : Cinzel Bold haut de gamme */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-title);
+    font-weight: 700;
+    color: var(--color-text-main);
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+}
+
+h1 {
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+/* Trait discret vert sous les titres h2 de section pour rythmer la page */
+h2::after {
+    content: "";
+    display: block;
+    width: 50px;
+    height: 3px;
+    background-color: var(--color-primary);
+    margin: 0.6rem auto 0;
+    border-radius: var(--radius-pill);
+}
+
+h3 {
+    font-size: clamp(1.15rem, 2vw, 1.4rem);
+    margin-bottom: 0.4rem;
+}
+
+p {
+    margin-bottom: 1rem;
+    color: var(--color-text-main);
+}
+
+/* Carnet de voyage / Sous-titres explorateur : Iosevka Charon Mono */
+.voyage,
+.prix,
+.statistique .pourcentage,
+figcaption,
+table caption,
+.reference-dossier,
+#enteteAdmin p,
+#enteteEspace p {
+    font-family: var(--font-mono);
+}
+
+
+/* --------------------------------------------------------------------------
+   5. HEADER & NAVIGATION PRINCIPALE
+   --------------------------------------------------------------------------
+   Notion clé DWWM :
+   - position: sticky : Le menu reste figé en haut de l'écran lors du défilement.
+   - z-index: 1000 : Évite que des éléments de la page (cartes, images) ne passent
+     par-dessus la barre de navigation.
+   - Flexbox (justify-content: space-between) : Répartit naturellement le logo,
+     les liens et les boutons d'actions sur la largeur.
+   -------------------------------------------------------------------------- */
+header {
+    background-color: var(--color-bg-base);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(30, 29, 26, 0.03);
+}
+
+.navLien {
+    max-width: var(--max-width-content);
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Le sélecteur cible spécifiquement la barre de navigation du header */
+header nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 76px;
+    gap: 20px;
+    width: 100%;
+}
+
+.logoGotomada {
+    width: 155px;
+    height: auto;
+    max-height: 58px;
+    object-fit: contain;
+    transition: transform var(--transition-fast);
+}
+
+.logoGotomada:hover {
+    transform: scale(1.02);
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.navigation ul {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 8px;
+}
+
+.navigation a {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--color-text-main);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-smooth);
+    position: relative;
+}
+
+.navigation a:hover {
+    color: var(--color-primary);
+    background-color: var(--color-primary-soft);
+}
+
+/* Lien de navigation actif : Indique visuellement à l'internaute sur quelle page il se trouve */
+.navigation a.accueilActif,
+a.accueilActif {
+    color: var(--color-primary);
+    font-weight: 600;
+    background-color: var(--color-primary-soft);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.actions i.fa-search {
+    font-size: 1.1rem;
+    color: var(--color-text-main);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: var(--transition-fast);
+}
+
+.actions i.fa-search:hover {
+    color: var(--color-primary);
+    background-color: var(--color-primary-soft);
+}
+
+.actions span {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--color-text-main);
+}
+
+/* Bouton du menu burger (caché par défaut sur grand écran de bureau) */
+.menuBurger {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 1.4rem;
+    color: var(--color-text-main);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.menuBurger:hover {
+    background-color: var(--color-secondary-bg);
+    border-color: var(--color-text-main);
+}
+
+
+/* --------------------------------------------------------------------------
+   6. BOUTONS & ÉLÉMENTS D'INTERACTION DU STYLE TILE
+   --------------------------------------------------------------------------
+   Ce que fait le code :
+   Définit l'apparence des boutons d'appel à l'action (Call to Action - CTA),
+   des boutons de formulaires et des liens secondaires.
+   
+   Notion clé DWWM :
+   - :hover et transition : Rétroaction visuelle essentielle (Feedback utilisateur)
+     pour indiquer qu'un élément est interactif.
+   - :focus-visible : Obligation d'accessibilité numérique (RGAA/WCAG) pour
+     permettre aux personnes naviguant au clavier (touche Tab) de voir où elles se situent.
+   -------------------------------------------------------------------------- */
+/* Bouton principal (Call to Action) : Vert #34C759 */
+.boutonVoirplus,
+#accueil a,
+button[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-text-main);
+    background-color: var(--color-primary);
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    padding: 10px 24px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 12px rgba(52, 199, 89, 0.28);
+    width: fit-content;
+    margin: 12px auto 0;
+}
+
+/* Flèche discrète animée au survol sur les liens .boutonVoirplus */
+a.boutonVoirplus::after,
+#accueil a::after {
+    content: "→";
+    margin-left: 8px;
+    font-family: var(--font-body);
+    font-weight: bold;
+    transition: transform var(--transition-fast);
+}
+
+.boutonVoirplus:hover,
+#accueil a:hover,
+button[type="submit"]:hover {
+    background-color: var(--color-primary-hover);
+    color: var(--color-white);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(52, 199, 89, 0.4);
+}
+
+.boutonVoirplus:hover::after,
+#accueil a:hover::after {
+    transform: translateX(4px);
+}
+
+/* Bouton secondaire (ex: Connexion dans le header) : Fond clair & bordure sobre */
+.boutonConnexion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--color-text-main);
+    background-color: var(--color-white);
+    border: 1.5px solid var(--color-text-main);
+    border-radius: var(--radius-pill);
+    padding: 8px 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+.boutonConnexion:hover {
+    background-color: var(--color-text-main);
+    color: var(--color-white);
+    transform: translateY(-1px);
+}
+
+/* Accessibilité (WCAG/RGAA) : Focus visible sur tous les éléments cliquables */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+
+/* --------------------------------------------------------------------------
+   7. SECTIONS HERO, À PROPOS & MADAGASCAR
+   --------------------------------------------------------------------------
+   Notion clé DWWM :
+   - linear-gradient() superposé à l'image d'arrière-plan :
+     Crée un voile semi-transparent sombre sur la photo pour garantir un contraste
+     suffisant entre le texte blanc et l'image (indispensable pour l'accessibilité).
+   -------------------------------------------------------------------------- */
+/* Section Hero accueil */
+#accueil {
+    background: linear-gradient(rgba(30, 29, 26, 0.4), rgba(30, 29, 26, 0.65)),
+                url("../images/background-image-accueil.png") center center / cover no-repeat;
+    min-height: 560px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--color-white);
+    gap: 16px;
+}
+
+#accueil h1 {
+    color: var(--color-white);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    max-width: 900px;
+}
+
+#accueil p {
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    color: var(--color-secondary-bg);
+    max-width: 700px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    margin-bottom: 12px;
+}
+
+#accueil a {
+    color: var(--color-text-main);
+    background-color: var(--color-primary);
+    padding: 14px 34px;
+    font-size: 1.05rem;
+}
+
+/* Sections génériques avec espacement soigné et centrage horizontal */
+main > section {
+    max-width: var(--max-width-content);
+    margin: 50px auto;
+    padding: 0 24px;
+}
+
+/* Section À propos */
+#aPropos {
+    padding: 40px 24px;
+    border-radius: var(--radius-lg);
+}
+
+.conteneurApropos {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    margin-top: 24px;
+}
+
+.conteneurApropos img {
+    width: 48%;
+    max-height: 380px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+}
+
+.paragrapheapresTitre {
+    flex: 1;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--color-text-main);
+    white-space: pre-line;
+}
+
+/* Section de découverte de Madagascar : Ambiance chaleureuse beige */
+#madagascar {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    margin: 60px auto;
+    background-color: var(--color-secondary-bg);
+    padding: 40px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-subtle);
+}
+
+.carteMadagascar {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.imageMadagascar {
+    max-width: 360px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(30, 29, 26, 0.08));
+    border-radius: var(--radius-md);
+}
+
+.contenu {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pourquoiMada {
+    text-align: left;
+    margin-bottom: 0.8rem;
+}
+
+.pourquoiMada::after {
+    margin: 0.5rem 0 0 0;
+}
+
+.visiterMadagascar {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 12px;
+}
+
+/* Boîtes de statistiques : carnet d'explorateur */
+.statistiques {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+.statistique {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-subtle);
+    transition: transform var(--transition-fast);
+}
+
+.statistique:hover {
+    transform: translateY(-2px);
+}
+
+.statistique .pourcentage {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 4px;
+}
+
+.statistique p {
+    font-size: 0.95rem;
+    margin-bottom: 0;
+    color: var(--color-text-main);
+}
+
+
+/* --------------------------------------------------------------------------
+   8. CARTES & CATALOGUE DE SÉJOURS DU STYLE TILE
+   --------------------------------------------------------------------------
+   Notion clé DWWM :
+   - CSS Grid (repeat(auto-fit, minmax(300px, 1fr))) :
+     Crée automatiquement autant de colonnes que l'écran peut en contenir,
+     d'une largeur minimale de 300px chacune. C'est la technique reine du responsive
+     pour les catalogues e-commerce / voyage.
+   - overflow: hidden sur la carte et transform: scale(1.04) sur l'image :
+     Crée un effet de zoom élégant à l'intérieur de la carte au survol sans dépasser.
+   -------------------------------------------------------------------------- */
+#nosSejours,
+#sejoursParRegion,
+#actionsRapides {
+    margin-top: 40px;
+}
+
+.lesCartes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 24px;
+}
+
+/* Carte de séjour épurée */
+.carte {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-card);
+    transition: transform var(--transition-smooth), box-shadow var(--transition-smooth), border-color var(--transition-smooth);
+}
+
+.carte:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(52, 199, 89, 0.35);
+}
+
+/* Zone image et badge prix positionné de manière absolue */
+.imagePrix {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+}
+
+.imagePrix img,
+.carte img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.carte:hover .imagePrix img {
+    transform: scale(1.04);
+}
+
+/* Badge de prix : Iosevka Charon Mono avec accentuation Orange du Style Tile */
+.prix {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    background-color: var(--color-secondary-bg);
+    border: 1px solid var(--color-accent);
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 2px 8px rgba(30, 29, 26, 0.15);
+}
+
+.elementsCarte {
+    padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.titreVoyage {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.titreVoyage h3 {
+    font-family: var(--font-title);
+    font-size: 1.25rem;
+    color: var(--color-text-main);
+}
+
+.voyage {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.description {
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--color-text-muted);
+    margin-bottom: 18px;
+    flex-grow: 1;
+}
+
+.elementsCarte .boutonVoirplus {
+    margin: 8px 0 0 0;
+    align-self: flex-start;
+}
+
+
+/* --------------------------------------------------------------------------
+   9. GALERIE PHOTOS & CARTE INTERACTIVE
+   -------------------------------------------------------------------------- */
+#galeriePhotos {
+    margin-top: 60px;
+}
+
+.galerie {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+}
+
+.imageGalerie {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-subtle);
+    transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+
+.imageGalerie:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Zone d'affichage de la carte interactive */
+#zoneCarte {
+    background-color: var(--color-secondary-bg);
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    margin-top: 24px;
+    text-align: center;
+}
+
+#carteInteractive figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+#carteInteractive img {
+    max-height: 480px;
+    width: auto;
+}
+
+figcaption {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. AVIS CLIENTS & NOTATION (Preuve sociale)
+   -------------------------------------------------------------------------- */
+#avisetNotation {
+    background-color: var(--color-secondary-bg);
+    padding: 50px 30px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-subtle);
+}
+
+.avisClients {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+.avis {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: transform var(--transition-fast);
+}
+
+.avis:hover {
+    transform: translateY(-3px);
+}
+
+.informations {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.informations img {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-primary);
+}
+
+.nomDestination {
+    display: flex;
+    flex-direction: column;
+}
+
+.pSpan {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pSpan p {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+/* Étoiles d'évaluation : Orange d'accentuation Style Tile */
+.pSpan span,
+.ligneAvis span {
+    color: var(--color-accent);
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
+.nomDestination > p {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0;
+}
+
+.note p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--color-text-main);
+    margin-bottom: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   11. FORMULAIRES HARMONISÉS (RECHERCHE, CONTACT, INSCRIPTION, RÉSERVATION)
+   --------------------------------------------------------------------------
+   Notion clé DWWM :
+   - :focus : Met en surbrillance l'input actif avec une bordure verte et un halo (outline offset/box-shadow).
+   - :has(input[type="checkbox"]) : Pseudo-classe moderne permettant de styliser
+     le conteneur parent uniquement lorsqu'il renferme une case à cocher.
+   -------------------------------------------------------------------------- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+}
+
+/* Formulaire filtres de recherche séjours */
+#filtresSejours,
+#filtresReservationsAdmin {
+    background-color: var(--color-secondary-bg);
+    padding: 30px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-subtle);
+    margin-bottom: 30px;
+}
+
+#filtresSejours form,
+#filtresReservationsAdmin form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+    align-items: end;
+}
+
+#filtresSejours form button,
+#filtresReservationsAdmin form button {
+    margin: 0;
+    height: 44px;
+    width: 100%;
+}
+
+/* Formulaires de contenu (Contact, Authentification, Profil, Détail séjour) */
+#formulaireContact,
+#formulaireConnexion,
+#formulaireInscription,
+#reservationSejour,
+#gestionProfil,
+#formulaireAjoutSejour,
+#formulaireUtilisateur {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    padding: clamp(24px, 4vw, 40px);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    max-width: var(--max-width-reading);
+    margin: 24px auto;
+}
+
+/* Centrage pour Connexion et Inscription */
+#formulaireConnexion,
+#formulaireInscription {
+    max-width: 520px;
+}
+
+form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Groupement de cases à cocher en ligne avec leur libellé */
+form > div:has(input[type="checkbox"]) {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+form label {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--color-text-main);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 11px 16px;
+    background-color: var(--color-bg-base);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--color-text-main);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+input[type="checkbox"] {
+    accent-color: var(--color-primary); /* Colore la case à cocher en vert GoToMada */
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+    cursor: pointer;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+    background-color: var(--color-white);
+}
+
+fieldset {
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+legend {
+    font-family: var(--font-title);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    padding: 0 10px;
+}
+
+.liensAideCompte {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 0.92rem;
+}
+
+.liensAideCompte a,
+form a {
+    color: var(--color-primary);
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+.liensAideCompte a:hover,
+form a:hover {
+    color: var(--color-primary-hover);
+}
+
+
+/* --------------------------------------------------------------------------
+   12. TABLEAUX DE DONNÉES SÉMANTIQUES (ESPACE CLIENT & ADMINISTRATION)
+   --------------------------------------------------------------------------
+   Notion clé DWWM :
+   - border-collapse: collapse : Fusionne les bordures des cellules contiguës.
+   - thead, tbody, th, td : Balisage sémantique indispensable pour les lecteurs d'écran.
+   - tr:hover : Met en valeur la ligne survolée pour une lecture confortable de données denses.
+   -------------------------------------------------------------------------- */
+/* Conteneur défilant pour éviter tout overflow sur mobile */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-subtle);
+    margin: 20px 0;
+}
+
+table caption {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    color: var(--color-text-muted);
+    text-align: left;
+    padding: 8px 4px;
+    font-style: italic;
+}
+
+thead {
+    background-color: var(--color-secondary-bg);
+}
+
+th {
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--color-text-main);
+    text-align: left;
+    padding: 14px 18px;
+    border-bottom: 2px solid var(--color-border);
+}
+
+td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.92rem;
+    vertical-align: middle;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: rgba(255, 241, 210, 0.4);
+}
+
+/* Badges de statuts positifs (Confirmé, Actif) */
+td strong {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    background-color: var(--color-primary-soft);
+    color: #1a7433;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+}
+
+/* Badges de statuts en attente ou d'alerte */
+td em {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-style: normal;
+    font-weight: 600;
+    background-color: rgba(255, 154, 64, 0.15);
+    color: #b35900;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+}
+
+td a {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+td a:hover {
+    text-decoration: underline;
+}
+
+
+/* --------------------------------------------------------------------------
+   13. SOUS-MENUS LOCAUX, FIL D'ARIANE & KPI DASHBOARD
+   -------------------------------------------------------------------------- */
+/* Fil d'Ariane de la page détail séjour (Aide à la navigation et SEO) */
+nav[aria-label="Fil d'Ariane"] {
+    max-width: var(--max-width-content);
+    margin: 20px auto 0;
+    padding: 0 24px;
+}
+
+nav[aria-label="Fil d'Ariane"] a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
+
+nav[aria-label="Fil d'Ariane"] a:hover {
+    color: var(--color-primary);
+}
+
+/* Sous-menus internes à l'espace utilisateur et à l'administration */
+#menuEspaceUtilisateur,
+#menuAdmin {
+    max-width: var(--max-width-content);
+    margin: 24px auto 30px;
+    padding: 0 24px;
+}
+
+#menuEspaceUtilisateur ul,
+#menuAdmin ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    list-style: none;
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: 12px;
+}
+
+#menuEspaceUtilisateur a,
+#menuAdmin a {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.92rem;
+    color: var(--color-text-muted);
+    padding: 8px 18px;
+    border-radius: var(--radius-pill);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    transition: var(--transition-fast);
+}
+
+#menuEspaceUtilisateur a:hover,
+#menuAdmin a:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+#menuEspaceUtilisateur a.accueilActif,
+#menuAdmin a.accueilActif {
+    background-color: var(--color-primary);
+    color: var(--color-text-main);
+    border-color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* En-têtes centrés des espaces dédiés */
+#enteteEspace,
+#enteteAdmin,
+#introductionSejours,
+#introductionCarte,
+#introductionContact,
+#introductionLegale,
+#introductionConditions,
+#introductionPolitique {
+    text-align: center;
+    max-width: 800px;
+    margin: 30px auto 20px;
+    padding: 0 24px;
+}
+
+/* Page détail séjour : 5 prestations incluses */
+#detailsPrestations {
+    background-color: var(--color-secondary-bg);
+    padding: 40px;
+    border-radius: var(--radius-lg);
+    margin-top: 40px;
+}
+
+#detailsPrestations article {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+#detailsPrestations article:last-child {
+    margin-bottom: 0;
+}
+
+#detailsPrestations h3 {
+    color: var(--color-primary);
+    font-size: 1.15rem;
+}
+
+#presentationSejour figure {
+    margin-top: 20px;
+}
+
+#presentationSejour img {
+    width: 100%;
+    max-height: 450px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+}
+
+/* Coordonnées agence (page contact) */
+#coordonneesAgence {
+    margin-top: 40px;
+}
+
+#coordonneesAgence address {
+    font-style: normal;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+#coordonneesAgence article {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-subtle);
+}
+
+#coordonneesAgence h3 {
+    color: var(--color-primary);
+    margin-bottom: 10px;
+}
+
+
+/* --------------------------------------------------------------------------
+   14. PAGES LÉGALES & TEXTUELLES (MENTIONS, CGU, POLITIQUE RGPD)
+   -------------------------------------------------------------------------- */
+#contenuMentions,
+#contenuConditions,
+#contenuPolitique {
+    max-width: var(--max-width-reading);
+    margin: 30px auto 60px;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: clamp(24px, 5vw, 50px);
+    box-shadow: var(--shadow-card);
+}
+
+#contenuMentions article,
+#contenuConditions article,
+#contenuPolitique article {
+    margin-bottom: 30px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+#contenuMentions article:last-child,
+#contenuConditions article:last-child,
+#contenuPolitique article:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+#contenuMentions h2,
+#contenuConditions h2,
+#contenuPolitique h2 {
+    text-align: left;
+    font-size: 1.35rem;
+    margin-bottom: 12px;
+}
+
+#contenuMentions h2::after,
+#contenuConditions h2::after,
+#contenuPolitique h2::after {
+    margin: 6px 0 0 0;
+}
+
+#contenuMentions ul,
+#contenuConditions ul,
+#contenuPolitique ul {
+    margin-left: 24px;
+    margin-bottom: 16px;
+}
+
+
+/* --------------------------------------------------------------------------
+   15. FOOTER PROFESSIONNEL
+   --------------------------------------------------------------------------
+   Notion clé DWWM :
+   - CSS Grid 3 colonnes (2fr 1fr 1.2fr) : La colonne de description de l'agence
+     occupe deux parts d'espace (2fr) par rapport aux colonnes de liens plus étroites.
+   -------------------------------------------------------------------------- */
+footer {
+    background-color: var(--color-secondary-bg);
+    border-top: 1px solid var(--color-border);
+    padding: 60px 24px 40px;
+    margin-top: 60px;
+    font-size: 0.92rem;
+    color: var(--color-text-main);
+}
+
+.footerContenu {
+    max-width: var(--max-width-content);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.2fr;
+    gap: 40px;
+}
+
+.colonneGotomada h3,
+.learnMore h3,
+.support h3 {
+    font-family: var(--font-title);
+    font-size: 1.15rem;
+    color: var(--color-text-main);
+    margin-bottom: 16px;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.colonneGotomada h3::after,
+.learnMore h3::after,
+.support h3::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 32px;
+    height: 2px;
+    background-color: var(--color-primary);
+    border-radius: var(--radius-pill);
+}
+
+.colonneGotomada p {
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.logoApp {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.logoApp .logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+    opacity: 0.85;
+}
+
+.logoApp .logo:hover {
+    transform: translateY(-3px);
+    opacity: 1;
+}
+
+.learnMore,
+.support {
+    display: flex;
+    flex-direction: column;
+}
+
+.learnMore a,
+.support a {
+    color: var(--color-text-muted);
+    padding: 5px 0;
+    transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.learnMore a:hover,
+.support a:hover {
+    color: var(--color-primary);
+    transform: translateX(4px);
+}
+
+
+/* --------------------------------------------------------------------------
+   16. RESPONSIVE DESIGN (TABLETTES & SMARTPHONES)
+   --------------------------------------------------------------------------
+   Notion clé DWWM (Cruciale pour l'oral !) :
+   - Approche Desktop-First / Adaptative :
+     Les styles généraux sont définis pour grand écran, puis les requêtes de médias
+     (@media max-width) redéfinissent la disposition au fur et à mesure que l'écran rétrécit.
+   - Breakpoints choisis :
+     * 992px : Tablettes en mode paysage et petits ordinateurs portables.
+     * 768px : Tablettes en mode portrait et smartphones (passage en menu burger).
+     * 480px : Écrans de smartphones très étroits.
+   -------------------------------------------------------------------------- */
+
+/* Tablettes moyennes et petits écrans (<= 992px) */
+@media screen and (max-width: 992px) {
+    /* Bascule la section À propos en colonne verticale */
+    .conteneurApropos {
+        flex-direction: column;
+    }
+
+    .conteneurApropos img {
+        width: 100%;
+        max-height: 320px;
+    }
+
+    /* Réorganise la découverte de Madagascar en une seule colonne centrée */
+    #madagascar {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+    }
+
+    .pourquoiMada {
+        text-align: center;
+    }
+
+    .pourquoiMada::after {
+        margin: 0.5rem auto 0;
+    }
+
+    /* Le footer passe de 3 à 2 colonnes */
+    .footerContenu {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+
+    /* La première colonne prend toute la largeur supérieure */
+    .colonneGotomada {
+        grid-column: 1 / -1;
+    }
+}
+
+/* Smartphones et tablettes au format portrait (<= 768px) */
+@media screen and (max-width: 768px) {
+    header nav {
+        flex-wrap: wrap;
+        padding: 12px 0;
+    }
+
+    .logoGotomada {
+        width: 135px;
+    }
+
+    /* Affichage du bouton burger (☰) sur mobile */
+    .menuBurger {
+        display: block;
+        order: 2;
+    }
+
+    .actions {
+        order: 3;
+        width: 100%;
+        justify-content: flex-end;
+        padding-top: 8px;
+        border-top: 1px solid var(--color-border);
+    }
+
+    .navigation {
+        order: 4;
+        width: 100%;
+        flex-basis: 100%;
+    }
+
+    /* Le menu de navigation <ul> est masqué par défaut sur mobile pour libérer l'écran */
+    .navigation ul {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        margin-top: 10px;
+        background-color: var(--color-white);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+    }
+
+    /* Classe ajoutée dynamiquement par js/script.js lors du clic sur le bouton burger */
+    /*grace a cette regle, le menu apprait sur mobile, */
+    .navigation ul.menuOuvert {
+        display: flex;
+    }
+
+    .navigation a {
+        display: block;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--color-border);
+        border-radius: 0;
+    }
+
+    .navigation li:last-child a {
+        border-bottom: none;
+    }
+
+    #accueil {
+        min-height: 460px;
+        padding: 30px 16px;
+    }
+
+    /* Les cartes de séjours passent sur une seule colonne pleine largeur */
+    .lesCartes {
+        grid-template-columns: 1fr;
+    }
+
+    /* Les avis clients passent sur une seule colonne */
+    .avisClients {
+        grid-template-columns: 1fr;
+    }
+
+    /* Tableau responsive avec défilement horizontal fluide sur petit écran */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    /* Le footer passe sur une seule colonne */
+    .footerContenu {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+/* Très petits écrans / Smartphones étroits (<= 480px) */
+@media screen and (max-width: 480px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .actions {
+        justify-content: space-between;
+    }
+
+    /* Boutons en pleine largeur sur mobile pour faciliter le clic au pouce (UX Mobile) */
+    .boutonVoirplus,
+    #accueil a,
+    button[type="submit"] {
+        width: 100%;
+        padding: 12px 20px;
+    }
+
+    #detailsPrestations {
+        padding: 20px 14px;
+    }
+}
